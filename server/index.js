@@ -5,10 +5,10 @@ const session = require("express-session");
 
 const router = require("./router");
 
-// const {
-//   readTokenMiddleware,
-//   authenticatedMiddleware,
-// } = require("./modules/auth");
+const {
+  readTokenMiddleware,
+  authenticatedMiddleware,
+} = require("./modules/auth");
 
 const app = express();
 

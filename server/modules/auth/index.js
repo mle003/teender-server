@@ -4,7 +4,7 @@ const { hashMd5, signToken, verifyToken } = require("../utils");
 const crypto = require("crypto");
 const { LoaderOptionsPlugin } = require("webpack");
 
-const handler = {
+const handlers = {
   async signIn(req, res, next) {
     try {
       let data = req.body;
