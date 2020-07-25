@@ -2,7 +2,6 @@ const userModel = require("./model");
 const { hashMd5, signToken, verifyToken } = require("../utils");
 
 const crypto = require("crypto");
-const { LoaderOptionsPlugin } = require("webpack");
 
 const handlers = {
   async signIn(req, res, next) {
@@ -52,7 +51,7 @@ const handlers = {
       }
 
       data.password = hashMd5(data.password);
-      data.email = String(email).toLowerCase().trim();
+      data.email = String(data.email).toLowerCase().trim();
       data.state = "available";
       let user = await userModel.create(data);
       let userData = user.toObject();
