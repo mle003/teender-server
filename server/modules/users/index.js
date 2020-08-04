@@ -32,7 +32,7 @@ const handlers = {
       
       let like = req.user.like
       let unlike = req.user.unlike
-      let metUsers = [...like, ...unlike]
+      let metUsers = [...like, ...unlike, req.user._id]
       let conditions = {
         'info.gender': interest, 
         'info.interest': gender, 
