@@ -33,7 +33,6 @@ const handlers = {
       let like = req.user.like
       let unlike = req.user.unlike
       let metUsers = [...like, ...unlike]
-      console.log(metUsers)
       let conditions = {
         'info.gender': interest, 
         'info.interest': gender, 
@@ -44,7 +43,6 @@ const handlers = {
         .skip(skip)
         .limit(limit)
 
-      console.log(req.user)
       res.json(template.successRes(items))
     } catch(e) {next(e)}
   }
