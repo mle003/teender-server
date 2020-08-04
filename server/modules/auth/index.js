@@ -1,6 +1,6 @@
 const userModel = require("./model");
 const { hashMd5, signToken, verifyToken } = require("../utils");
-
+const template = require("../template");
 const crypto = require("crypto");
 
 const handlers = {
@@ -27,13 +27,13 @@ const handlers = {
       if (user.password != hashedPassword) {
         throw new Error("Invalid email or password");
       }
-
       let userData = user.toObject();
       delete userData.password;
 
-      let accessToken = signToken(userData);
+      let accessToken = signToken({_id: userData._id, email: userData.formattedEmail});
       userData.accessToken = accessToken;
-      res.json(userData);
+
+      res.json(template.successRes(userData));
     } catch (err) {
       next(err);
     }
@@ -52,12 +52,14 @@ const handlers = {
 
       data.password = hashMd5(data.password);
       data.email = String(data.email).toLowerCase().trim();
-      data.state = "available";
       let user = await userModel.create(data);
+      
+      if (!data.info)
+        throw new Error('Please provide data of user')
+      
       let userData = user.toObject();
 
       delete userData.password;
-
       res.json(userData);
     } catch (err) {
       next(err);

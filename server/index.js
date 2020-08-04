@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 
 const router = require("./router");
+const template = require("./modules/template");
 
 const {
   readTokenMiddleware,
@@ -20,19 +21,16 @@ app.use(
     secret: "my secret string",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 12 * 60 * 60 }, //12h
+    cookie: { maxAge: 12 * 60 * 60}, //12 hours
   })
 );
 
-// app.use(readTokenMiddleware);
+app.use(readTokenMiddleware);
 
 app.use(router);
 
 app.use((err, req, res, next) => {
-  res.status(500).json({
-    message: err.message,
-    stack: err.stack,
-  });
+  res.status(500).json(template.failedRes(err.message));
 });
 
 app.listen(port, (err) => {

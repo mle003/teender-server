@@ -20,16 +20,44 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
+  info: {
+    name: {
+      type: String,
+      required: true,
+    },
+    birthdate: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+      enum: ["male", "female"],
+    },
+    interest: {
+      type: String,
+      required: true,
+      enum: ["male", "female", "both"],
+    },
+    desc: {
+      type: String,
+      required: false,
+    }, 
+    imgUrl: {
+      type: String,
+      required: false,
+    }   
   },
-  birthdate: Date,
-  state: {
-    type: String,
-    required: true,
-    enum: ["available", "disbale"],
-  },
+  match: Array,
+  likedBy: Array,
+  like: Array,
+
+  // state: {
+  //   type: String,
+  //   required: true,
+  //   enum: ["available", "disable"],
+  // },
+
 });
 
 module.exports = schema;
