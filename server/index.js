@@ -5,6 +5,7 @@ const session = require("express-session");
 
 const router = require("./router");
 const template = require("./modules/template");
+const cors = require("cors");
 
 const {
   readTokenMiddleware,
@@ -14,6 +15,7 @@ const {
 const app = express();
 
 const port = 9000;
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(
@@ -21,7 +23,7 @@ app.use(
     secret: "my secret string",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 12 * 60 * 60}, //12 hours
+    cookie: { maxAge: 12 * 60 * 60 }, //12 hours
   })
 );
 
