@@ -11,7 +11,6 @@ const chatHandler = {
           { users: data.users },
           { $push: { messages: data.messages } }
         );
-        console.log("oke");
       } else {
         await chatModel.create(data);
       }
