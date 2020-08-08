@@ -42,11 +42,11 @@ const schema = new mongoose.Schema({
     desc: {
       type: String,
       required: false,
-    }, 
+    },
     imgUrl: {
       type: String,
       required: false,
-    }   
+    },
   },
   match: Array,
   likedBy: Array,
@@ -58,7 +58,6 @@ const schema = new mongoose.Schema({
   //   required: true,
   //   enum: ["available", "disable"],
   // },
-
 });
 
 module.exports = schema;

@@ -2,6 +2,7 @@ require("./connect-mongo");
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const cors = require('cors')
 
 const router = require("./router");
 const template = require("./modules/template");
@@ -16,6 +17,7 @@ const app = express();
 const port = 9000;
 
 app.use(bodyParser.json());
+app.use(cors())
 app.use(
   session({
     secret: "my secret string",
@@ -30,7 +32,8 @@ app.use(readTokenMiddleware);
 app.use(router);
 
 app.use((err, req, res, next) => {
-  res.status(500).json(template.failedRes(err.message));
+  if (err)
+    res.json(template.failedRes(err.message));
 });
 
 app.listen(port, (err) => {
