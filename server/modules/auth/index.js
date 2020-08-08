@@ -1,7 +1,7 @@
 const userModel = require("./model");
 const { hashMd5, signToken, verifyToken } = require("../utils");
 const template = require("../template");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 
 const handlers = {
   async signIn(req, res, next) {
@@ -22,10 +22,10 @@ const handlers = {
       let user = await userModel.findOne({ email: formattedEmail });
 
       if (!user) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid email");
       }
       if (user.password != hashedPassword) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid password");
       }
       let userData = user.toObject();
       delete userData.password;
@@ -35,6 +35,7 @@ const handlers = {
 
       res.json(template.successRes(userData));
     } catch (err) {
+      err.status = 400
       next(err);
     }
   },
@@ -62,6 +63,7 @@ const handlers = {
       delete userData.password;
       res.json(userData);
     } catch (err) {
+      err.status = 400
       next(err);
     }
   },
@@ -73,8 +75,8 @@ const handlers = {
         req.user = userData;
       }
       next();
-    } catch (error) {
-      next(new Error("invalid access token!"));
+    } catch (err) {
+      next(new Error("Invalid access token!"));
     }
   },
   async authenticatedMiddleware(req, res, next) {
@@ -84,8 +86,26 @@ const handlers = {
         throw new Error("Unauthenticated");
       }
       next();
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      err.status = 400
+      next(err);
+    }
+  },
+  async checkUser(req, res, next) {
+    try {
+      let accessToken = req.headers.token;
+      if (accessToken) {
+        let userData = verifyToken(accessToken);
+        
+        if (!userData || !userData._id)
+          throw new Error("Invalid access token!")
+
+        req.user = await userModel.findById(userData._id);
+        res.json(template.successRes(req.user))
+      } 
+    } catch (err) {
+      err.status = 400
+      next(err);
     }
   },
 };

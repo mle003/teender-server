@@ -1,23 +1,18 @@
-let model = require('../auth/model')
-const { verifyToken } = require("../utils");
+let userModel = require('../auth/model')
+const authHandlers = require("../auth");
 const template = require('../template')
 
 const handlers = {
-  async getUsers(req, res, next) {
+  async getCards(req, res, next) {
     try {
       let { 
         pageIndex = 1, 
         pageSize = 10,
       } = req.query
 
-      let accessToken = req.headers.token;
+      let userId = req.user._id
+      req.user = await userModel.findById(userId);
 
-      if (accessToken) {
-        let userData = verifyToken(accessToken);
-        req.user = await model.findById(userData._id);
-      } else {
-        throw new Error('Nguời dùng chưa xác thực')
-      }
       // count = !!count
       let skip = eval((pageIndex - 1) * pageSize)
       let limit = eval(pageSize)
@@ -38,7 +33,7 @@ const handlers = {
         'info.interest': gender, 
         '_id': {$nin: metUsers}
       }
-      let items = await model
+      let items = await userModel
         .find(conditions, {info: 1})
         .skip(skip)
         .limit(limit)
