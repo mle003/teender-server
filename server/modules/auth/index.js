@@ -67,7 +67,7 @@ const handlers = {
   },
   async readTokenMiddleware(req, res, next) {
     try {
-      let accessToken = req.headers.authorization;
+      let accessToken = req.headers.token;
       if (accessToken) {
         let userData = verifyToken(accessToken);
         req.user = userData;

@@ -51,13 +51,12 @@ const schema = new mongoose.Schema({
   match: Array,
   likedBy: Array,
   like: Array,
-
+  unlike: Array,
   // state: {
   //   type: String,
   //   required: true,
   //   enum: ["available", "disable"],
   // },
-
 });
 
 module.exports = schema;

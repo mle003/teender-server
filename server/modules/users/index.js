@@ -10,7 +10,7 @@ const handlers = {
         pageSize = 10,
       } = req.query
 
-      let accessToken = req.headers.authorization;
+      let accessToken = req.headers.token;
 
       if (accessToken) {
         let userData = verifyToken(accessToken);
