@@ -44,7 +44,7 @@ const handlers = {
       let likeId = req.body._id;
 
       let user = req.user;
-      let userId = req.user.userId;
+      let userId = req.user._id;
       let data = []
       
       switch (status) {

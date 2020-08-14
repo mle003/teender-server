@@ -76,6 +76,7 @@ const handlers = {
       } 
       next();
     } catch (err) {
+      console.log(err)
       next(new Error("Invalid access token!"));
     }
   },
