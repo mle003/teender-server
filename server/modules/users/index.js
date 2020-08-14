@@ -14,17 +14,19 @@ const handlers = {
       let skip = eval((pageIndex - 1) * pageSize)
       let limit = eval(pageSize)
 
-      let interest = req.user.info.interest
-      let gender = req.user.info.gender
+      let user = await userModel.findById(req.user._id);
 
-      if(!req.user.like) 
-        req.user.like = []
-      if(!req.user.unlike) 
-        req.user.unlike = []
+      let interest = user.info.interest
+      let gender = user.info.gender
+
+      if(!user.like) 
+        user.like = []
+      if(!user.unlike) 
+        user.unlike = []
       
-      let like = req.user.like
-      let unlike = req.user.unlike
-      let metUsers = [...like, ...unlike, req.user._id]
+      let like = user.like
+      let unlike = user.unlike
+      let metUsers = [...like, ...unlike, user._id]
       let conditions = {
         'info.gender': interest, 
         'info.interest': gender, 
