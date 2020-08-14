@@ -30,7 +30,7 @@ const handlers = {
       let userData = user.toObject();
       delete userData.password;
 
-      let accessToken = signToken({_id: userData._id, email: userData.formattedEmail});
+      let accessToken = signToken(userData);
       userData.accessToken = accessToken;
 
       res.json(template.successRes(userData));
@@ -71,9 +71,9 @@ const handlers = {
     try {
       let accessToken = req.headers.token;
       if (accessToken) {
-        let userData = verifyToken(accessToken);
-        req.user = userData;
-      }
+        let userData = verifyToken(accessToken)
+        req.user = await userModel.findById(userData._id);
+      } 
       next();
     } catch (err) {
       next(new Error("Invalid access token!"));
@@ -83,7 +83,7 @@ const handlers = {
     try {
       let user = req.user;
       if (!user || !user._id) {
-        throw new Error("Unauthenticated");
+        throw new Error("Unauthenticated user");
       }
       next();
     } catch (err) {

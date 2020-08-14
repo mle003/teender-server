@@ -1,6 +1,7 @@
 let userModel = require('../auth/model')
 const authHandlers = require("../auth");
-const template = require('../template')
+const template = require('../template');
+const { verifyToken } = require('../utils');
 
 const handlers = {
   async getCards(req, res, next) {
@@ -10,10 +11,6 @@ const handlers = {
         pageSize = 10,
       } = req.query
 
-      let userId = req.user._id
-      req.user = await userModel.findById(userId);
-
-      // count = !!count
       let skip = eval((pageIndex - 1) * pageSize)
       let limit = eval(pageSize)
 
@@ -40,7 +37,46 @@ const handlers = {
 
       res.json(template.successRes(items))
     } catch(e) {next(e)}
-  }
+  },
+  async likeAndUnlike(req, res, next) {
+    try {
+      let status = req.body.status;
+      let likeId = req.body._id;
+
+      let user = req.user;
+      let userId = req.user.userId;
+      let data = []
+      
+      switch (status) {
+        case "like":
+          await userModel.updateOne(
+            { _id: userId },
+            { $addToSet: { like: likeId } }
+          );
+          await userModel.updateOne(
+            { _id: likeId },
+            { $addToSet: { likedBy: userId } }
+          );
+          data = user.like
+          if (!data.includes(likeId)) data.push(likeId)
+          break;
+
+        case "unlike":
+          await userModel.updateOne(
+            { _id: userId },
+            { $addToSet: { unlike: likeId } }
+          );
+          data = user.unlike
+          if (!data.includes(likeId)) data.push(likeId)
+          break;
+        default: 
+          throw new Error('Invalid value. Must be either "like" or "unlike".')
+      }
+      res.json(template.successRes(data));
+    } catch (err) {
+      next(err);
+    }
+  },
 }
 
 module.exports = handlers
