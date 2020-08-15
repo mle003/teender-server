@@ -29,6 +29,7 @@ const handlers = {
       }
       let userData = user.toObject();
       delete userData.password;
+      delete userData.likedBy
 
       let accessToken = signToken(userData);
       userData.accessToken = accessToken;
@@ -65,6 +66,7 @@ const handlers = {
       let user = await userModel.create(formatedData);
       let userData = user.toObject();
       delete userData.password;
+      delete userData.likedBy
 
       let accessToken = signToken(userData);
       userData.accessToken = accessToken;
@@ -110,7 +112,10 @@ const handlers = {
           throw new Error("Invalid access token!")
 
         req.user = await userModel.findById(userData._id);
-        res.json(template.successRes(req.user))
+        let user = {...req.user}
+        delete user.password
+        delete user.likedBy
+        res.json(template.successRes(user))
       } 
     } catch (err) {
       err.status = 400
