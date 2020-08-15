@@ -43,6 +43,7 @@ const handlers = {
   async signUp(req, res, next) {
     try {
       let data = req.body;
+      let formatedData = {}
 
       if (
         typeof data.password != "string" ||
@@ -51,17 +52,24 @@ const handlers = {
         throw new Error("Invalid password! Password must be between 6 and 30");
       }
 
-      data.password = hashMd5(data.password);
-      data.email = String(data.email).toLowerCase().trim();
-      let user = await userModel.create(data);
-      
-      if (!data.info)
-        throw new Error('Please provide data of user')
-      
+      formatedData.password = hashMd5(data.password);
+      formatedData.email = String(data.email).toLowerCase().trim();
+      formatedData.info = {
+        name: data.name,
+        birthdate: data.birthdate,
+        gender: data.gender,
+        interest: data.interest,
+        desc: data.desc || 'This is demo description',
+        imgUrl: data.imgUrl || 'https://live.staticflickr.com/2734/4353428267_bba2b6f6f8.jpg'
+      }
+      let user = await userModel.create(formatedData);
       let userData = user.toObject();
-
       delete userData.password;
-      res.json(userData);
+
+      let accessToken = signToken(userData);
+      userData.accessToken = accessToken;
+      
+      res.json(template.successRes(userData));
     } catch (err) {
       err.status = 400
       next(err);
