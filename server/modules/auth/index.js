@@ -111,7 +111,7 @@ const handlers = {
         if (!userData || !userData._id)
           throw new Error("Invalid access token!")
 
-        req.user = await userModel.findById(userData._id);
+        req.user = await userModel.findById(userData._id).lean();
         let user = {...req.user}
         delete user.password
         delete user.likedBy

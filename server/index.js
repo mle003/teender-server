@@ -12,6 +12,8 @@ const {
   authenticatedMiddleware,
 } = require("./modules/auth");
 
+const { allowCrossOrigin } = require('./modules/utils')
+
 const app = express();
 
 const port = 9000;

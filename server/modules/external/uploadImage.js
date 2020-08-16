@@ -1,26 +1,33 @@
 const request = require("request");
 let template = require("../template");
-const IMAGE_API_KEY = "6d207e02198a847aa98d0a2a901485a5"
+const CLIENT_ID = "75b70d84a0aae57"
 
 async function uploadImage(req, res, next) {
   try {
     let base64Code = req.body.source
-    const api = "https://freeimage.host/api/1/upload" + "?key=" + IMAGE_API_KEY
-
+    // const api = "https://freeimage.host/api/1/upload"
+    const api = "https://api.imgur.com/3/image"
+    const options = {
+      url: api,
+      headers: {
+        Authorization: 'Client-ID ' + CLIENT_ID,
+      },
+      formData: {image: base64Code}
+    };
     request.post(
-      {url: api, formData: {source: base64Code}}, 
-      function optionalCallback(err, httpResponse, body) {
-        if (err) 
-          throw err
-      let response = JSON.parse(body)
+      options, 
+      (err, httpResponse, body) => {
+        if (err) throw err
 
-      if (response.status_code != 200)
-        throw new Error(response.error.message || "Something went wrong")
+        let response = JSON.parse(body)
 
-      res.json(template.successRes(response.image.image))
-    });
+        if (!response.success)
+          res.json(template.failedRes(response.data.error))
+        else 
+          res.json(template.successRes(response.data))
+      });
 
-  } catch (err) {
+  } catch(err) {
     console.log(err)
     next(err)
   }
