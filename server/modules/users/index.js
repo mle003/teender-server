@@ -47,7 +47,7 @@ const handlers = {
       let likeId = req.body._id;
 
       let validId = await model.exists({_id: likeId})
-      if (!validId)
+      if (!validId) 
         throw new Error('Invalid userId')
 
       let user = req.user;
@@ -75,7 +75,7 @@ const handlers = {
           );
 
           data = user.like
-          if (!data.includes(likeId)) data.push(likeId)
+          if (!data.includes(likeId)) data.unshift(likeId)
           console.log(data)
 
           // --------------------
@@ -99,7 +99,7 @@ const handlers = {
             { $push: { unlike: { $each: [likedId], $position: 0 } } }
           );
           data = user.unlike
-          if (!data.includes(likeId)) data.push(likeId)
+          if (!data.includes(likeId)) data.unshift(likeId)
           break;
         default: 
           throw new Error('Invalid value. Must be either "like" or "unlike".')
