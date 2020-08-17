@@ -98,7 +98,7 @@ const handlers = {
         case "unlike":
           await userModel.updateOne(
             { _id: userId },
-            { $push: { unlike: { $each: [likedId], $position: 0 } } }
+            { $push: { unlike: { $each: [likeId], $position: 0 } } }
           );
           data = user.unlike
           if (!data.includes(likeId)) data.unshift(likeId)
