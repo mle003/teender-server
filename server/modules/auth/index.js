@@ -31,7 +31,7 @@ const handlers = {
       delete userData.password;
       delete userData.likedBy
 
-      let accessToken = signToken(userData);
+      let accessToken = signToken({_id: userData, email: userData.email});
       userData.accessToken = accessToken;
 
       res.json(template.successRes(userData));
@@ -68,7 +68,7 @@ const handlers = {
       delete userData.password;
       delete userData.likedBy
 
-      let accessToken = signToken(userData);
+      let accessToken = signToken({_id: userData, email: userData.email});
       userData.accessToken = accessToken;
       
       res.json(template.successRes(userData));
@@ -113,6 +113,7 @@ const handlers = {
 
         req.user = await userModel.findById(userData._id).lean();
         let user = {...req.user}
+        user.accessToken = accessToken
         delete user.password
         delete user.likedBy
         res.json(template.successRes(user))

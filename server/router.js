@@ -4,6 +4,7 @@ const router = new express.Router();
 const authHandlers = require("./modules/auth");
 const userHandlers = require("./modules/users");
 const uploadImage = require("./modules/external/uploadImage");
+const dev = require('./modules/dev')
 
 router.get("/api/auth/check-user", authHandlers.checkUser); 
 
@@ -17,6 +18,7 @@ router.post("/api/like-unlike", userHandlers.likeAndUnlike, authHandlers.authent
 router.get("/api/match", userHandlers.getMatches, authHandlers.authenticatedMiddleware);
 
 // other handler
-router.post("/api/upload-image", uploadImage);
+router.post("/api/upload-image", uploadImage, authHandlers.authenticatedMiddleware);
+// router.get("/api/dev", dev);
 
 module.exports = router;

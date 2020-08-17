@@ -1,8 +1,5 @@
 let userModel = require('../auth/model')
-const authHandlers = require("../auth");
 const template = require('../template');
-const { verifyToken } = require('../utils');
-const model = require('../auth/model');
 
 const handlers = {
   async getCards(req, res, next) {
@@ -46,7 +43,7 @@ const handlers = {
       let status = req.body.status;
       let likeId = req.body._id;
 
-      let validId = await model.exists({_id: likeId})
+      let validId = await userModel.exists({_id: likeId})
       if (!validId) 
         throw new Error('Invalid userId')
 
@@ -64,14 +61,11 @@ const handlers = {
         case "like":
           await userModel.updateOne(
             { _id: userId },
-            // { $addToSet: { like: likeId } }
             { $push: { like: { $each: [likeId], $position: 0 } } }
           );
           await userModel.updateOne(
             { _id: likeId },
-            // { $addToSet: { likedBy: userId } }
             { $push: { likedBy: { $each: [userId], $position: 0 } } }
-
           );
 
           data = user.like
@@ -81,13 +75,22 @@ const handlers = {
           // --------------------
           let thatUser = await userModel.findById(likeId);
           if (thatUser.like.includes(userId)) {
+
+            // template match Data
+            function matchData(id) {
+              return {
+                _id: id,
+                createdAt: new Date().toISOString()
+              }
+            }
+
             await userModel.updateOne(
               { _id: userId },
-              { $push: { match: { $each: [likeId], $position: 0 } } }
+              { $push: { match: { $each: [matchData(likeId)], $position: 0 } } }
             );
             await userModel.updateOne(
               { _id: likeId },
-              { $push: { match: { $each: [userId], $position: 0 } } }
+              { $push: { match: { $each: [matchData(userId)], $position: 0 } } }
             );
           }
           // --------------------
@@ -95,7 +98,6 @@ const handlers = {
         case "unlike":
           await userModel.updateOne(
             { _id: userId },
-            // { $addToSet: { unlike: likeId } }
             { $push: { unlike: { $each: [likedId], $position: 0 } } }
           );
           data = user.unlike
@@ -127,9 +129,9 @@ const handlers = {
       //     match.unshift(item)
       //   }
       // }
-
+      let listMatchId = user.match.map(el => el._id)
       let conditions = {
-        '_id': {$in: user.match}
+        '_id': {$in: listMatchId}
       }
       let matchItems = await userModel
         .find(conditions, {info: 1})
