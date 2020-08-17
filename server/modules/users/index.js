@@ -70,12 +70,9 @@ const handlers = {
 
           data = user.like
           if (!data.includes(likeId)) data.unshift(likeId)
-          console.log(data)
 
           // --------------------
-          let thatUser = await userModel.findById(likeId);
-          if (thatUser.like.includes(userId)) {
-
+          if (user.likedBy.includes(likeId)) {
             // template match Data
             function matchData(id) {
               return {
