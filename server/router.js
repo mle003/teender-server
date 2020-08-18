@@ -3,6 +3,8 @@ const router = new express.Router();
 
 const authHandlers = require("./modules/auth");
 const userHandlers = require("./modules/users");
+const settingHandlers = require("./modules/setting");
+
 const uploadImage = require("./modules/external/uploadImage");
 const dev = require('./modules/dev')
 
@@ -17,8 +19,10 @@ router.get("/api/cards", userHandlers.getCards, authHandlers.authenticatedMiddle
 router.post("/api/like-unlike", userHandlers.likeAndUnlike, authHandlers.authenticatedMiddleware);
 router.get("/api/match", userHandlers.getMatches, authHandlers.authenticatedMiddleware);
 
+// setting handler
+router.post("/api/reset-password", settingHandlers.resetPassword, authHandlers.authenticatedMiddleware);
+
 // other handler
 router.post("/api/upload-image", uploadImage, authHandlers.authenticatedMiddleware);
 // router.get("/api/dev", dev);
-
 module.exports = router;
