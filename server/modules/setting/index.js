@@ -1,6 +1,6 @@
 let userModel = require('../auth/model')
 const template = require('../template');
-const { hashMd5, signToken, verifyToken } = require("../utils");
+const { hashMd5, signToken, verifyToken, validateString } = require("../utils");
 
 const handlers = {
   async resetPassword(req, res, next) {
@@ -27,6 +27,52 @@ const handlers = {
       )
       
       res.json(template.successRes(''))
+    } catch(e) {next(e)}
+  },
+  async updateProfile(req, res, next) {
+    try {
+      // can update 7 fields: name/email/gender/interest/birthdate/desc/imgUrl
+      
+      // --------- Get data ------------
+      let user = req.user
+      let email = req.body.email || user.email
+      let info = {
+        name:  req.body.name || user.info.name,
+        gender: req.body.gender || user.info.gender,
+        interest: req.body.interest || user.info.interest,
+        birthdate: req.body.birthdate || user.info.interest,
+        desc: req.body.desc || user.info.desc,
+        imgUrl: req.body.imgUrl || user.info.imgUrl,
+      }
+
+      // ---- Validate data ------------
+      if (!validateString(email)) 
+        email = user.email
+      
+      for (let prop in info) {
+        if(!validateString(info[prop])) 
+          info[prop] = user.info[prop]
+        
+        if (prop == 'gender' || prop == 'interest') {
+          if (!["male", "female"].includes(info[prop])) 
+            info[prop] = user.info[prop]
+        }
+
+        if (prop == 'birthdate') {
+          if (new Date(info[prop]) == "Invalid Date") 
+            info[prop] = user.info[prop]
+        }
+      }
+      // ---------------------
+
+      await userModel.updateOne(
+        {_id: user._id },
+        { email: email.toLocaleLowerCase(), info: info }
+      )
+
+      let userData = { email, info }
+      
+      res.json(template.successRes(userData))
     } catch(e) {next(e)}
   },
 }

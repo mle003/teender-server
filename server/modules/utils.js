@@ -18,4 +18,8 @@ function verifyToken(token) {
   return jwt.verify(token, JWT_SECRET);
 }
 
-module.exports = { hashMd5, signToken, verifyToken };
+function validateString(str) {
+  return typeof(str) == "string" && str.length > 0
+}
+
+module.exports = { hashMd5, signToken, verifyToken, validateString };

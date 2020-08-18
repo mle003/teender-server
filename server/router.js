@@ -21,8 +21,9 @@ router.get("/api/match", authen, userHandlers.getMatches);
 
 // setting handler
 router.post("/api/reset-password", authen, settingHandlers.resetPassword);
+router.put("/api/update-profile", authen, settingHandlers.updateProfile);
 
 // other handler
-router.post("/api/upload-image", authen, uploadImage);
+router.post("/api/upload-image", uploadImage);
 // router.get("/api/dev", dev);
 module.exports = router;
