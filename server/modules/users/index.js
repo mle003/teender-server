@@ -1,4 +1,6 @@
 let userModel = require('../auth/model')
+let chatModel = require('../chat/model')
+
 const template = require('../template');
 
 const handlers = {
@@ -71,13 +73,15 @@ const handlers = {
           data = user.like
           if (!data.includes(likeId)) data.unshift(likeId)
 
-          // --------------------
+          // -------- When users match ------------
           if (user.likedBy.includes(likeId)) {
             // template match Data
+            let createdAt = new Date().toISOString()
+
             function matchData(id) {
               return {
                 _id: id,
-                createdAt: new Date().toISOString()
+                createdAt: createdAt
               }
             }
 
@@ -89,6 +93,15 @@ const handlers = {
               { _id: likeId },
               { $push: { match: { $each: [matchData(userId)], $position: 0 } } }
             );
+
+              // BUG: userId is ObjectId, and likedId is string
+            let chatData = {
+              users: [userId, likeId],
+              createdAt: createdAt,
+              messages: []
+            }
+
+            await chatModel.create(chatData)
           }
           // --------------------
           break;
@@ -135,8 +148,16 @@ const handlers = {
         .find(conditions, {info: 1})
         .skip(skip)
         .limit(limit)
+      
+      let matchItemsWithDate = matchItems.map((item, i) => {
+        return {
+          _id: item._id,
+          info: item.info,
+          createdAt: user.match[i].createdAt
+        }
+      })
 
-      res.json(template.successRes(matchItems));
+      res.json(template.successRes(matchItemsWithDate));
     } catch(err) {
       next(err)
     }

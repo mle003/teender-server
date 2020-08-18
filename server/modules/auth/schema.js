@@ -33,11 +33,13 @@ const schema = new mongoose.Schema({
       type: String,
       required: true,
       enum: ["male", "female"],
+      default: 'male'
     },
     interest: {
       type: String,
       required: true,
-      enum: ["male", "female", "both"],
+      enum: ["male", "female"],
+      default: 'male'
     },
     desc: {
       type: String,
