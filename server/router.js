@@ -16,6 +16,8 @@ router.post("/api/like-unlike", likeHandler.likeAndUnlike);
 
 router.post("/api/chat", chatHandler.chat);
 
+router.post("/api/findUsersChat", chatHandler.findUsersChat);
+
 // User handler
 
 // User handler

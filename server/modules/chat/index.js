@@ -20,6 +20,16 @@ const chatHandler = {
       next(error);
     }
   },
+  async findUsersChat(req, res, next) {
+    try {
+      let data = req.body;
+      let users = await chatModel.findOne({ users: data.users });
+      console.log(users);
+      res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = chatHandler;

@@ -7,6 +7,7 @@ const socketIo = require("socket.io");
 
 const router = require("./router");
 const template = require("./modules/template");
+const chatHandler = require("./modules/chat");
 
 const {
   readTokenMiddleware,
@@ -36,6 +37,21 @@ app.use((err, req, res, next) => {
   if (err) res.json(template.failedRes(err.message));
 });
 
-app.listen(port, (err) => {
+const server = app.listen(port, (err) => {
   console.log(err || `Server opened at port '${port}'`);
 });
+
+setupSocket(server);
+
+function setupSocket(server) {
+  const io = socketIo(server);
+
+  io.on("connection", (socket) => {
+    console.log("some one connect to server");
+    // send mess from server to client
+    socket.on("Input Chat Message", function (messages) {
+      // console.log(messages);
+      socket.emit("Output Chat Message", messages);
+    });
+  });
+}
