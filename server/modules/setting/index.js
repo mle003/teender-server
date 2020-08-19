@@ -22,11 +22,11 @@ const handlers = {
         throw new Error("Invalid password! Password must be between 6 and 30");
 
       await userModel.updateOne(
-        {_id: user._id },
+        {_id: String(user._id) },
         { password: hashedNewPassword}
       )
       
-      res.json(template.successRes(''))
+      res.json(template.successRes('Update password successful!'))
     } catch(e) {next(e)}
   },
   async updateProfile(req, res, next) {
@@ -65,13 +65,14 @@ const handlers = {
       }
       // ---------------------
 
-      await userModel.updateOne(
+      let userData = await userModel.findByIdAndUpdate(
         {_id: user._id },
-        { email: email.toLocaleLowerCase(), info: info }
-      )
-
-      let userData = { email, info }
-      
+        { email: email.toLocaleLowerCase(), info: info },
+        { 
+          fields: { email :1, info: 1, _id: 1},
+          new: true 
+        }
+      )      
       res.json(template.successRes(userData))
     } catch(e) {next(e)}
   },

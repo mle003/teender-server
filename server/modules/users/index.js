@@ -26,7 +26,7 @@ const handlers = {
       
       let like = user.like
       let unlike = user.unlike
-      let metUsers = [...like, ...unlike, user._id]
+      let metUsers = [...like, ...unlike, String(user._id)]
       let conditions = {
         'info.gender': interest, 
         'info.interest': gender, 
@@ -43,14 +43,14 @@ const handlers = {
   async likeAndUnlike(req, res, next) {
     try {
       let status = req.body.status;
-      let likeId = req.body._id;
+      let likeId = String(req.body._id);
 
       let validId = await userModel.exists({_id: likeId})
       if (!validId) 
         throw new Error('Invalid userId')
 
       let user = req.user;
-      let userId = req.user._id;
+      let userId = String(req.user._id);
 
       let myMetUsers = [...req.user.like, ...req.user.unlike]
       if (myMetUsers.includes(likeId))
@@ -59,25 +59,27 @@ const handlers = {
         throw new Error('The person you have swiped is you. Something went wrong.')
 
       let data = []
+
       switch (status) {
         case "like":
-          await userModel.updateOne(
+          data = await userModel.findByIdAndUpdate(
             { _id: userId },
-            { $push: { like: { $each: [likeId], $position: 0 } } }
+            { $push: { like: { $each: [likeId], $position: 0 } } },
+            {
+              fields: {like: 1},
+              new: true
+            }
           );
+          data = data.like
           await userModel.updateOne(
             { _id: likeId },
             { $push: { likedBy: { $each: [userId], $position: 0 } } }
           );
 
-          data = user.like
-          if (!data.includes(likeId)) data.unshift(likeId)
-
           // -------- When users match ------------
           if (user.likedBy.includes(likeId)) {
-            // template match Data
-            let createdAt = new Date().toISOString()
 
+            let createdAt = new Date().toISOString()
             function matchData(id) {
               return {
                 _id: id,
@@ -94,7 +96,6 @@ const handlers = {
               { $push: { match: { $each: [matchData(userId)], $position: 0 } } }
             );
 
-              // BUG: userId is ObjectId, and likedId is string
             let chatData = {
               users: [userId, likeId],
               createdAt: createdAt,
@@ -106,12 +107,17 @@ const handlers = {
           // --------------------
           break;
         case "unlike":
-          await userModel.updateOne(
+          data = await userModel.findByIdAndUpdate(
             { _id: userId },
-            { $push: { unlike: { $each: [likeId], $position: 0 } } }
+            { $push: { unlike: { $each: [likeId], $position: 0 } } },
+            {
+              fields: {unlike: 1},
+              new: true
+            }
           );
-          data = user.unlike
-          if (!data.includes(likeId)) data.unshift(likeId)
+
+          data = data.unlike
+
           break;
         default: 
           throw new Error('Invalid value. Must be either "like" or "unlike".')
@@ -140,7 +146,7 @@ const handlers = {
       //   }
       // }
 
-      let listMatchId = user.match.map(el => el._id)
+      let listMatchId = user.match.map(el => String(el._id))
       let conditions = {
         '_id': {$in: listMatchId}
       }
@@ -151,7 +157,7 @@ const handlers = {
       
       let matchItemsWithDate = matchItems.map((item, i) => {
         return {
-          _id: item._id,
+          _id: String(item._id),
           info: item.info,
           createdAt: user.match[i].createdAt
         }
