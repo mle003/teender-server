@@ -26,7 +26,7 @@ const handlers = {
         { password: hashedNewPassword}
       )
       
-      res.json(template.successRes('Update password successful!'))
+      res.json(template.successRes('Password updated successfully!'))
     } catch(e) {next(e)}
   },
   async updateProfile(req, res, next) {

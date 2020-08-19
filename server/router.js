@@ -8,22 +8,23 @@ const settingHandlers = require("./modules/setting");
 const uploadImage = require("./modules/external/uploadImage");
 const dev = require('./modules/dev')
 
+// Auth handler
 router.get("/api/auth/check-user", authHandlers.checkUser); 
 router.post("/api/auth/sign-up", authHandlers.signUp);
 router.post("/api/auth/sign-in", authHandlers.signIn);
 
-// User handler 
-let authen = authHandlers.authenticatedMiddleware
 
+let authen = authHandlers.authenticatedMiddleware
+// User handler 
 router.get("/api/cards", authen, userHandlers.getCards);
 router.post("/api/like-unlike", authen, userHandlers.likeAndUnlike);
 router.get("/api/match", authen, userHandlers.getMatches);
 
 // setting handler
-router.post("/api/reset-password", authen, settingHandlers.resetPassword);
+router.put("/api/reset-password", authen, settingHandlers.resetPassword);
 router.put("/api/update-profile", authen, settingHandlers.updateProfile);
 
 // other handler
-router.post("/api/upload-image", uploadImage);
+router.post("/api/upload-image", authen, uploadImage);
 // router.get("/api/dev", dev);
 module.exports = router;
