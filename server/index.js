@@ -14,8 +14,10 @@ const {
 } = require("./modules/auth");
 
 const app = express();
+const port = process.env.PORT || 9000;
 
-const port = 9000;
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 app.use(bodyParser.json({
   extended: true,
@@ -50,4 +52,9 @@ app.use(express.static("public"));
 
 app.listen(port, (err) => {
   console.log(err || `Server opened at port '${port}'`);
+});
+
+
+io.on('connection', function(socket){
+  console.log('a user connected');
 });

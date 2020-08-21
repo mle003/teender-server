@@ -132,7 +132,7 @@ const handlers = {
     try {
       let { 
         pageIndex = 1, 
-        pageSize = 10,
+        pageSize = 20,
       } = req.query
 
       let skip = eval((pageIndex - 1) * pageSize)
