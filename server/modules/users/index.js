@@ -45,9 +45,9 @@ const handlers = {
       let status = req.body.status;
       let likeId = String(req.body._id);
 
-      let validId = await userModel.exists({_id: likeId})
-      if (!validId) 
-        throw new Error('Invalid userId')
+      // let validId = await userModel.exists({_id: likeId})
+      // if (!validId) 
+      //   throw new Error('Invalid userId')
 
       let user = req.user;
       let userId = String(req.user._id);
@@ -146,15 +146,21 @@ const handlers = {
       //   }
       // }
 
+      // get list of Ids
       let listMatchId = user.match.map(el => String(el._id))
+
+      // get only data in listMatchId
       let conditions = {
         '_id': {$in: listMatchId}
       }
+
+      // get data in 'info' field
       let matchItems = await userModel
         .find(conditions, {info: 1})
         .skip(skip)
         .limit(limit)
       
+      // join data with _id and createdAt -> send this response to client
       let matchItemsWithDate = matchItems.map((item, i) => {
         return {
           _id: String(item._id),
@@ -163,6 +169,7 @@ const handlers = {
         }
       })
 
+      // send json response
       res.json(template.successRes(matchItemsWithDate));
     } catch(err) {
       next(err)

@@ -6,8 +6,8 @@ const handlers = {
   async resetPassword(req, res, next) {
     try {
       let user = req.user
-      let oldPw = req.body.old_password
-      let newPw = req.body.new_password
+      let oldPw = req.body.oldPassword
+      let newPw = req.body.newPassword
 
       let hashedOldPassword = hashMd5(String(oldPw));
       let hashedNewPassword = hashMd5(String(newPw)); 
@@ -41,8 +41,8 @@ const handlers = {
         gender: req.body.gender || user.info.gender,
         interest: req.body.interest || user.info.interest,
         birthdate: req.body.birthdate || user.info.interest,
-        desc: req.body.desc || user.info.desc,
-        imgUrl: req.body.imgUrl || user.info.imgUrl,
+        desc: req.body.desc,
+        imgUrl: req.body.imgUrl,
       }
 
       // ---- Validate data ------------
