@@ -28,8 +28,9 @@ const chatHandler = {
   },
   async sendMessage(req, res, next) {
     try {
+      let {chatId} = req.query
+
       let userId = String(req.user._id) // string, not an ObjectId
-      let chatId = req.body.chatId.trim()
       let content = req.body.content.trim()
       let type = req.body.type
       let createdAt = new Date().toISOString()

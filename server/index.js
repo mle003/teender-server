@@ -55,6 +55,8 @@ app.listen(port, (err) => {
 });
 
 
-io.on('connection', function(socket){
-  console.log('a user connected');
+io.on('connection', (socket) => {
+  console.log('a user connected via socket');
 });
+
+module.exports = { io }
