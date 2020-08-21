@@ -18,7 +18,13 @@ const chatHandler = {
       let list = await chatModel.find(
         {users: {$all: [userId]}}, 
         {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}}
-      ).skip(skip).limit(limit)
+      )
+      .skip(skip).limit(limit)
+      .populate({
+        path: 'users',
+        match: { _id: { $ne: userId } },
+        select: 'info'
+      })
 
       // return 20 lists with 20 latest mess each
       res.json(template.successRes(list))
@@ -37,7 +43,9 @@ const chatHandler = {
 
       if (typeof(content) != "string")
         throw new Error("Content is not valid, must be a string")
-
+        
+      if (!chatId)
+        throw new Error("Missing chat id!")
       // let partnerId = req.user._id
       // if (!partnerId || typeof(partnerId) != 'string')
       //   throw new Error('Sending message failed!') 

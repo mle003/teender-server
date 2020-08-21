@@ -2,6 +2,7 @@ let userModel = require('../auth/model')
 let chatModel = require('../chat/model')
 
 const template = require('../template');
+const mongoose = require('mongoose');
 
 const handlers = {
   async getCards(req, res, next) {
@@ -69,7 +70,8 @@ const handlers = {
               fields: {like: 1},
               new: true
             }
-          );
+          ).populate('like','info')
+
           data = data.like
           await userModel.updateOne(
             { _id: likeId },
@@ -95,7 +97,7 @@ const handlers = {
               { _id: likeId },
               { $push: { match: { $each: [matchData(userId)], $position: 0 } } }
             );
-
+            
             let chatData = {
               users: [userId, likeId],
               createdAt: createdAt,
@@ -114,7 +116,7 @@ const handlers = {
               fields: {unlike: 1},
               new: true
             }
-          );
+          ).populate('unlike','info')
 
           data = data.unlike
 

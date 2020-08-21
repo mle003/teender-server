@@ -32,5 +32,5 @@ router.get("/api/chat/message", authen, chatHandlers.getMessage);
 
 // other handler
 router.post("/api/upload-image", authen, uploadImage);
-// router.get("/api/dev", dev);
+router.get("/api/dev", dev);
 module.exports = router;

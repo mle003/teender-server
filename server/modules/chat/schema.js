@@ -6,10 +6,11 @@ const mongoose = require("mongoose");
 // };
 
 const schema = new mongoose.Schema({
-  users: {
-    type: Array,
+  users: [{
+    type: String,
     required: true,
-  },
+    ref: 'users'
+  }],
   createdAt: {
     type: String,
     required: true,
