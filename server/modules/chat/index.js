@@ -41,18 +41,12 @@ const chatHandler = {
       let type = req.body.type
       let createdAt = new Date().toISOString()
 
-      if (typeof(content) != "string")
+      if (typeof(content) != "string" && !content.trim())
         throw new Error("Content is not valid, must be a string")
         
       if (!chatId)
         throw new Error("Missing chat id!")
-      // let partnerId = req.user._id
-      // if (!partnerId || typeof(partnerId) != 'string')
-      //   throw new Error('Sending message failed!') 
-
-      // let validId = await chatModel.exists({_id: chatId})
-      //   if (!validId) 
-      //     throw new Error('Invalid channel chat')
+    
       let newMess = {
         owner: userId, 
         type: type,
