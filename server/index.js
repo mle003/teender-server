@@ -58,7 +58,7 @@ io.on('connection', function(socket){ // socket = 1 session of user A
         loop2:
         for(let socketId in onlineUsers) { // loop thru socketId of ALL online users
           if(onlineUsers[socketId]._id == matchId) { // if one of user A's matches is online
-            io.to(socketId).emit("a-match-offline", matchId) 
+            io.to(socketId).emit("a-match-offline", onlineUsers[socket.id]._id) 
             // emit to this online match that A is offline
             break loop2 // breaks loop when found A
           }
@@ -82,8 +82,7 @@ io.on('connection', function(socket){ // socket = 1 session of user A
       loop2:
       for(let socketId in onlineUsers) { // loop thru socketId of ALL online users
         if(onlineUsers[socketId]._id == matchId) { // if one of user A's matches is online
-          //myOnlineMatches[socketId] = {_id: matchId}; // set to list online matches of A
-          myOnlineMatches.push(matchId)
+          myOnlineMatches.push(matchId) // set to list online matches of A
           io.to(socketId).emit("a-match-online", userId) // emit to all this online match that A is online
           break loop2 // breaks loop when found
         }
@@ -96,6 +95,18 @@ io.on('connection', function(socket){ // socket = 1 session of user A
     for(let socketId in onlineUsers) {
       if(onlineUsers[socketId]._id == matchId) {
         io.to(socketId).emit('receive-message', newMess, chatId, matchId)
+        break;
+      }
+    }
+  })
+
+  // when A likes B when B already liked A: 
+  // A: Server responds to A that it's a match -> .emit a match + self trigger get ChatList/Match to rerender UI
+  // B: .on data from here and also trigger ChatList/Match
+  socket.on('match', function(senderData, recipentId) { // senderData._id & senderData.info
+    for(let socketId in onlineUsers) {
+      if(onlineUsers[socketId]._id == recipentId) {
+        io.to(socketId).emit('receive-match', senderData) // senderData._id & senderData.info
         break;
       }
     }

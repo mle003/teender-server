@@ -11,6 +11,17 @@ const schema = new mongoose.Schema({
     required: true,
     ref: 'users'
   }],
+  // usersRead: [{
+  //   userId: {
+  //     type: String,
+  //     required: true,      
+  //   },
+  //   read: {
+  //     type: Boolean,
+  //     required: true,
+  //     default: false
+  //   }
+  // }],
   createdAt: {
     type: String,
     required: true,
