@@ -16,6 +16,8 @@ const {
 const app = express();
 const port = process.env.PORT || 9000;
 
+app.use(express.static('public'))
+
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
@@ -23,9 +25,7 @@ app.use(bodyParser.json({
   extended: true,
   limit: '50mb'
 }));
-
 app.use(cors())
-
 app.use(
   session({
     secret: "my secret string",
@@ -40,7 +40,11 @@ app.use((err, req, res, next) => {
   if (err)
     res.json(template.failedRes(err.message));
 });
-// server.listen NOT app.listen
+
+app.get('*', (req,res) =>{
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 server.listen(port, (err) => {
   console.log(err || `Server opened at port '${port}'`);
 });
