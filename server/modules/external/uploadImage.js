@@ -1,6 +1,6 @@
 const request = require("request");
 let template = require("../template");
-const CLIENT_ID = "75b70d84a0aae57"
+const CLIENT_ID = process.env.CLIENT_ID_IMGUR
 
 async function uploadImage(req, res, next) {
   try {

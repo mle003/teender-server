@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
-const USERNAME = process.argv[2]
-const PASSWORD = process.argv[3]
+const USERNAME = process.env.USERNAME_MONGO
+const PASSWORD = process.env.PASSWORD_MONGO
 
 if (!USERNAME || !PASSWORD)
   throw new Error('Missing username/password for mongo')
