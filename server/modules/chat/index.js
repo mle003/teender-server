@@ -17,7 +17,7 @@ const chatHandler = {
 
       let list = await chatModel.find(
         {users: {$all: [userId]}}, 
-        {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}}
+        {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}, usersRead: 1}
       )
       .skip(skip).limit(limit)
       .populate({
@@ -34,7 +34,7 @@ const chatHandler = {
   },
   async sendMessage(req, res, next) {
     try {
-      let {chatId} = req.query
+      let {chatId, matchId} = req.query
 
       let userId = String(req.user._id) // string, not an ObjectId
       let content = req.body.content.trim()
@@ -56,7 +56,12 @@ const chatHandler = {
 
       let data = await chatModel.findByIdAndUpdate(
         {_id: chatId},
-        {$push: {messages: { $each: [newMess], $position: 0 }}},
+        { $push: {messages: { $each: [newMess], $position: 0 }}, 
+          usersRead: [
+            {userId: userId, read: true},
+            {userId: matchId, read: false}
+          ]
+        },
         {
           fields: {_id: 1, users: 1, createdAt: 1, messages: {$slice: 1}},
           new: true
@@ -85,6 +90,26 @@ const chatHandler = {
       let data = await chatModel.findById(
         {_id: chatId},
         {_id: 1, users: 1, createdAt: 1, messages: {$slice: [skip, limit]}}
+      )
+      res.json(template.successRes(data));
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async readMessage(req, res, next) {
+    try {
+      let chatId = req.body.chatId
+      let userId = String(req.user._id)
+      if (!chatId)
+        throw new Error("Missing chat id!")
+        
+      let data = await chatModel.findOneAndUpdate(
+        {_id: chatId, usersRead: {$elemMatch: {userId: userId}}},
+        {$set: {"usersRead.$.read": true}},
+        {
+          new: true
+        }
       )
       res.json(template.successRes(data));
     } catch (error) {

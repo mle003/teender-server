@@ -15,15 +15,12 @@ const handlers = {
       let skip = eval((pageIndex - 1) * pageSize)
       let limit = eval(pageSize)
 
-      let user = req.user
+      let user = await userModel.findById(
+        {_id: req.user._id},
+      )
 
       let interest = user.info.interest
       let gender = user.info.gender
-
-      if(!user.like) 
-        user.like = []
-      if(!user.unlike) 
-        user.unlike = []
       
       let like = user.like
       let unlike = user.unlike
@@ -45,15 +42,14 @@ const handlers = {
     try {
       let status = req.body.status;
       let likeId = String(req.body._id);
-
-      // let validId = await userModel.exists({_id: likeId})
-      // if (!validId) 
-      //   throw new Error('Invalid userId')
-
-      let user = req.user;
       let userId = String(req.user._id);
 
-      let myMetUsers = [...req.user.like, ...req.user.unlike]
+      let user = await userModel.findById(
+        {_id: userId},
+      )
+
+      let myMetUsers = [...user.like, ...user.unlike]
+
       if (myMetUsers.includes(likeId))
         throw new Error('This person has already be in your list. Something went wrong.')
       if (likeId == userId)
@@ -71,16 +67,19 @@ const handlers = {
               new: true
             }
           ).populate('like','info')
-
           data = data.like
-          await userModel.updateOne(
+          
+          let likedUser = await userModel.findByIdAndUpdate(
             { _id: likeId },
-            { $push: { likedBy: { $each: [userId], $position: 0 } } }
+            { $push: { likedBy: { $each: [userId], $position: 0 } } },
+            {
+              fields: {like: 1},
+              new: true
+            }
           );
 
           // -------- When users match ------------
-          if (user.likedBy.includes(likeId)) {
-
+          if (likedUser.like.includes(userId)) {
             let createdAt = new Date().toISOString()
             function matchData(id) {
               return {
@@ -101,7 +100,11 @@ const handlers = {
             let chatData = {
               users: [userId, likeId],
               createdAt: createdAt,
-              messages: []
+              messages: [],
+              usersRead: [
+                {userId: userId, read: false},
+                {userId: likeId, read: false}
+              ]
             }
 
             await chatModel.create(chatData)
@@ -139,16 +142,7 @@ const handlers = {
 
       let skip = eval((pageIndex - 1) * pageSize)
       let limit = eval(pageSize)
-      let user = req.user
-
-      // let match = []
-      // for (let item in user.like) {
-      //   if (user.likedBy.includes(item)) {
-      //     match.unshift(item)
-      //   }
-      // }
-
-      // get list of Ids
+      let user = await chatModel.findById({_id: req.user._id})
       let listMatchId = user.match.map(el => String(el._id))
 
       // get only data in listMatchId

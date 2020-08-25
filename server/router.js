@@ -29,6 +29,7 @@ router.put("/api/update-profile", authen, settingHandlers.updateProfile);
 router.get("/api/chat/list", authen, chatHandlers.getListChat);
 router.post("/api/chat/message", authen, chatHandlers.sendMessage);
 router.get("/api/chat/message", authen, chatHandlers.getMessage);
+router.put("/api/chat/read-message", authen, chatHandlers.readMessage);
 
 // other handler
 router.post("/api/upload-image", authen, uploadImage);
