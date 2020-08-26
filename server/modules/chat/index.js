@@ -19,7 +19,7 @@ const chatHandler = {
         {users: {$all: [userId]}}, 
         {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}, usersRead: 1}
       )
-      .skip(skip).limit(limit)
+      .skip(skip).limit(limit).sort({createdAt: 'desc'})
       .populate({
         path: 'users',
         match: { _id: { $ne: userId } },

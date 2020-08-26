@@ -56,6 +56,7 @@ const handlers = {
         throw new Error('The person you have swiped is you. Something went wrong.')
 
       let data = []
+      let match = false
 
       switch (status) {
         case "like":
@@ -80,6 +81,7 @@ const handlers = {
 
           // -------- When users match ------------
           if (likedUser.like.includes(userId)) {
+            match = true
             let createdAt = new Date().toISOString()
             function matchData(id) {
               return {
@@ -127,7 +129,8 @@ const handlers = {
         default: 
           throw new Error('Invalid value. Must be either "like" or "unlike".')
       }
-      res.json(template.successRes(data));
+
+      res.json(template.successRes({match: match, list: data}));
     } catch (err) {
       err.status = 400
       next(err);
@@ -155,6 +158,7 @@ const handlers = {
         .find(conditions, {info: 1})
         .skip(skip)
         .limit(limit)
+        .sort({createdAt: 'desc'})
       
       // join data with _id and createdAt -> send this response to client
       let matchItemsWithDate = matchItems.map((item, i) => {

@@ -103,9 +103,10 @@ io.on('connection', function(socket){ // socket = 1 session of user A
   // when A likes B when B already liked A: 
   // A: Server responds to A that it's a match -> .emit a match + self trigger get ChatList/Match to rerender UI
   // B: .on data from here and also trigger ChatList/Match
-  socket.on('match', function(senderData, recipentId) { // senderData._id & senderData.info
+  socket.on('match', function(senderData, recipentData) { // _id & info
+    socket.emit('receive-match', recipentData) // senderData._id & senderData.info
     for(let socketId in onlineUsers) {
-      if(onlineUsers[socketId]._id == recipentId) {
+      if(onlineUsers[socketId]._id == recipentData._id) {
         io.to(socketId).emit('receive-match', senderData) // senderData._id & senderData.info
         break;
       }
