@@ -31,7 +31,7 @@ const handlers = {
       delete userData.password;
       delete userData.likedBy
 
-      let accessToken = signToken({_id: userData, email: userData.email});
+      let accessToken = signToken({_id: userData._id, email: userData.email});
       userData.accessToken = accessToken;
 
       res.json(template.successRes(userData));
@@ -68,7 +68,7 @@ const handlers = {
       delete userData.password;
       delete userData.likedBy
 
-      let accessToken = signToken({_id: userData, email: userData.email});
+      let accessToken = signToken({_id: userData._id, email: userData.email});
       userData.accessToken = accessToken;
       
       res.json(template.successRes(userData));
